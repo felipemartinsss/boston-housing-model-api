@@ -1,0 +1,7 @@
+curl --location 'http://127.0.0.1:8000/predict' \
+--header 'Content-Type: application/json' \
+--data '{
+    "number_of_rooms": 7,
+    "lstat": 10,
+    "ptratio": 15
+}'
