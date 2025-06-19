@@ -1,11 +1,25 @@
 import joblib
+from fastapi import FastAPI
+import uvicorn
+from pydantic import BaseModel
 
-if __name__ == '__main__':
-    print("main")
-    modelo = joblib.load("../model/random_forest.pkl")
-    number_of_rooms = input("Enter the number of rooms: ")
-    lstat = input("Enter the lower status population percentage: ")
-    ptratio = input("Enter the pupil-teacher rate by town: ")
+app = FastAPI()
+
+
+class SimplifiedBostonHousingPayload(BaseModel):
+    number_of_rooms: int
+    lstat: int
+    ptratio: int
+
+@app.post("/predict")
+async def predict(body: SimplifiedBostonHousingPayload):
+    number_of_rooms = body.number_of_rooms
+    lstat = body.lstat
+    ptratio = body.ptratio
     model_input = [[number_of_rooms, lstat, ptratio]]
-    house_value = modelo.predict(model_input)
-    print(f"Predicted house value: {house_value[0]}")
+    house_value = model.predict(model_input)
+    return {"house_value": house_value[0]}
+
+if __name__ == "__main__":
+    model = joblib.load("../model/random_forest.pkl")
+    uvicorn.run(app, host = "127.0.0.1", port = 8000)
